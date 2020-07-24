@@ -24,15 +24,15 @@ const particlesOptions = {
 const initialState = {
   input: '',
   imageUrl: '',
-  boxes: [{}],
-  route: 'signin',
+  boxes: [],
+  route: 'home',
   isSignedIn: false,
   user: {
-    id: '',
-    name: '',
-    email: '',
-    entries: 0,
-    joined: ''
+    id: '1',
+    name: 'day',
+    email: 'day@gmail.com',
+    entries: 50,
+    joined: 'whenever'
   }
 }
 
@@ -52,31 +52,35 @@ class App extends Component {
     }})
   }
 
-  calculateFaceLocation = (data) => {
-    const image = document.getElementById('inputimage');
-    const width = Number(image.width);
-    const height = Number(image.height);
+  calculateFaceLocations = (data) => {
 
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height)
-    }
+    // const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
 
-    // const clarifaiFace = data.outputs[0].data.regions.map((pic) => {
-    //   let boundingBox = pic.region_info.bounding_box
+    // const image = document.getElementById('inputimage');
+    // const width = Number(image.width);
+    // const height = Number(image.height);
 
-    //   return {
-    //     leftcol: boundingBox.left_col * width,
-    //     topRow: boundingBox.top_row * height,
-    //     rightCol: width - (boundingBox.right_col * width),
-    //     bottomRow: height - (boundingBox.bottom_row * height)
+    // return {
+    //     leftCol: clarifaiFace.left_col * width,
+    //     topRow: clarifaiFace.top_row * height,
+    //     rightCol: width - (clarifaiFace.right_col * width),
+    //     bottomRow: height - (clarifaiFace.bottom_row * height)
     //   }
-    // })
 
-    // return clarifaiFace
+    return data.outputs[0].data.regions.map((pic) => {
+      const image = document.getElementById('inputimage');
+      const width = Number(image.width);
+      const height = Number(image.height);
+      let clarifaiFace = pic.region_info.bounding_box
+
+      return {
+        leftCol: clarifaiFace.left_col * width,
+        topRow: clarifaiFace.top_row * height,
+        rightCol: width - (clarifaiFace.right_col * width),
+        bottomRow: height - (clarifaiFace.bottom_row * height)
+      }
+    })
+
   }
 
   displayFaceBox = (boxes) => {
@@ -114,8 +118,7 @@ class App extends Component {
 
         }
 
-        console.log(response)
-        this.displayFaceBox(this.calculateFaceLocation(response))
+        this.displayFaceBox(this.calculateFaceLocations(response))
       })
       .catch(err => console.log(err));
   }
@@ -149,6 +152,7 @@ class App extends Component {
                 onButtonSubmit={this.onButtonSubmit}
               />
               <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
+
             </div>
           : (
              route === 'signin'
