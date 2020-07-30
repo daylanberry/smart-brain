@@ -2,7 +2,6 @@ import React from 'react';
 import './FaceRecognition.css';
 
 const FaceRecognition = ({ imageUrl, boxes }) => {
-  console.log('b', boxes)
 
   return (
     <div className='center ma'>
